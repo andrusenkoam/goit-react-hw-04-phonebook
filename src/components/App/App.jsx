@@ -7,22 +7,13 @@ import { Filter } from 'components/Filter/Filter';
 import { ContactList } from 'components/ContactList/ContactList';
 
 export function App() {
-  const [contacts, setContacts] = useState([]);
+  const [contacts, setContacts] = useState(
+    () => JSON.parse(localStorage.getItem('contacts')) ?? []
+  );
   const [filter, setFilter] = useState('');
 
-  const renderedContacts = getFilteredContacts();
-
   useEffect(() => {
-    const parsedContacts = JSON.parse(localStorage.getItem('contacts'));
-
-    if (parsedContacts) {
-      setContacts(parsedContacts);
-    }
-  }, []);
-
-  useEffect(() => {
-    contacts.length !== 0 &&
-      localStorage.setItem('contacts', JSON.stringify(contacts));
+    localStorage.setItem('contacts', JSON.stringify(contacts));
   }, [contacts]);
 
   function addContact({ name, number }) {
@@ -78,7 +69,10 @@ export function App() {
         <>
           <ContactsTitle>Contacts</ContactsTitle>
           <Filter value={filter} onChange={changeFilter} />
-          <ContactList contacts={renderedContacts} onClick={removeContact} />
+          <ContactList
+            contacts={getFilteredContacts()}
+            onClick={removeContact}
+          />
         </>
       )}
       <ToastContainer />
